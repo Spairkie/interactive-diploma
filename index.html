@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Interactive Diploma · Hans Nii Torghor Sai</title>
+<meta content="Interactive Diploma is a museum-quality 3D diploma experience with Zero-UI controls, cinematic opening, screenshot export, and a flexible premium spine." name="description"/>
+<meta content="Hans Nii Torghor Sai" name="author"/>
+<meta content="#103783" name="theme-color"/>
+<link href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2213%22%20fill%3D%22%230c1a30%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%23d8b56d%22%20stroke-width%3D%221.5%22%20opacity%3D%220.5%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23d8b56d%22%20stroke-width%3D%222.2%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2241.5%22%20text-anchor%3D%22middle%22%20font-family%3D%22Georgia%2C%20%27Times%20New%20Roman%27%2C%20serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22%23e7cd80%22%3ELU%3C%2Ftext%3E%3C%2Fsvg%3E" rel="icon" type="image/svg+xml"/>
+<meta content="website" property="og:type"/>
+<meta content="Interactive Diploma" property="og:title"/>
+<meta content="A museum-quality interactive 3D diploma experience with a cinematic reveal, Zero-UI controls, and exportable views." property="og:description"/>
+<meta content="interactive-diploma" property="og:site_name"/>
+<meta content="summary" name="twitter:card"/>
+<meta content="Interactive Diploma" name="twitter:title"/>
+<meta content="A museum-quality interactive 3D diploma experience with a cinematic reveal, Zero-UI controls, and exportable views." name="twitter:description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&amp;family=UnifrakturCook:wght@700&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&amp;family=Mrs+Saint+Delafield&amp;family=Great+Vibes&amp;display=swap" rel="stylesheet"/>
+<link href="styles/main.css" rel="stylesheet"/>
+</head>
+<body>
+<div id="stage">
+<canvas aria-label="Interactive 3D Liberty University diploma viewer" id="c"></canvas>
+</div>
+<div aria-label="Diploma controls" id="appChrome">
+<div aria-hidden="true" class="stageGlow"></div>
+<div aria-hidden="true" class="cursorHint" id="cursorHint">Explore</div>
+<div aria-label="System controls" class="systemTray">
+<button aria-label="Export screenshot" class="chromeButton" data-tip="Save image" id="btnCapture" type="button"><span class="ico">◉</span><span class="miniLabel">Export</span></button>
+<button aria-label="Fullscreen" class="chromeButton" data-tip="Fullscreen" id="btnFullscreen" type="button"><span class="ico">⛶</span><span class="miniLabel">Full</span></button>
+</div>
+<button aria-label="Reset view" class="chromeButton escapeReset" data-tip="Reset view" id="btnReset" type="button"><span class="ico">↻</span><span class="miniLabel">Reset</span></button>
+<div aria-label="Diploma view controls" id="ui">
+<div class="rangeCard">
+<label class="rangeMeta" for="openRange">
+<span aria-hidden="true">Cover</span>
+<span class="srOnly">Cover open amount</span>
+<span id="openValue">100%</span>
+</label>
+<input aria-label="Cover open amount" data-tip="Slide cover" id="openRange" max="100" min="0" type="range" value="100"/>
+</div>
+<div aria-label="Camera controls" class="iconCluster">
+<button aria-label="Zoom in" data-tip="Closer" id="btnZoomIn" type="button"><span class="ico">＋</span><span class="miniLabel">Closer</span></button>
+<button aria-label="Zoom out" data-tip="Wider" id="btnZoomOut" type="button"><span class="ico">−</span><span class="miniLabel">Wider</span></button>
+<button aria-label="Move camera target" class="targetPad" data-tip="Reframe" id="targetPad" title="Drag to reframe. Double-click to center." type="button"><span aria-hidden="true" class="targetDot" id="targetDot"></span><span class="miniLabel">Frame</span></button>
+</div>
+</div>
+<button aria-controls="debugPanel" aria-expanded="false" aria-label="Open tuning panel" class="debugToggle" id="debugToggle" type="button">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24">
+<path d="M4 7h10"></path><path d="M18 7h2"></path><circle cx="16" cy="7" r="2"></circle>
+<path d="M4 17h2"></path><path d="M10 17h10"></path><circle cx="8" cy="17" r="2"></circle>
+<path d="M4 12h5"></path><path d="M13 12h7"></path><circle cx="11" cy="12" r="2"></circle>
+</svg>
+</button>
+<aside aria-label="Camera and view tuning controls" hidden="" id="debugPanel">
+<div class="debugHeader">
+<div>
+<span class="debugTitle">Camera tuning</span>
+<span class="debugSub">Fine-tune defaults, then copy or save. Press D to toggle.</span>
+</div>
+<button aria-label="Close tuning panel" class="debugClose" id="debugClose" type="button">×</button>
+</div>
+<div aria-live="polite" class="debugStats" id="debugStats"></div>
+<div class="debugSection">Composition</div>
+<div class="debugControl">
+<label for="dbgOpen">Open</label>
+<input id="dbgOpen" max="100" min="0" step="0.1" type="range"/>
+<output class="debugVal" for="dbgOpen" id="dbgOpenVal">85%</output>
+</div>
+<div class="debugControl">
+<label for="dbgDist">Distance</label>
+<input id="dbgDist" max="13.5" min="3.1" step="0.001" type="range"/>
+<output class="debugVal" for="dbgDist" id="dbgDistVal">0</output>
+</div>
+<div class="debugControl">
+<label for="dbgFov">FOV</label>
+<input id="dbgFov" max="58" min="24" step="0.1" type="range"/>
+<output class="debugVal" for="dbgFov" id="dbgFovVal">34°</output>
+</div>
+<div class="debugSection">Rotation</div>
+<div class="debugControl">
+<label for="dbgPitch">Pitch</label>
+<input id="dbgPitch" max="45" min="-45" step="0.1" type="range"/>
+<output class="debugVal" for="dbgPitch" id="dbgPitchVal">0°</output>
+</div>
+<div class="debugControl">
+<label for="dbgYaw">Yaw</label>
+<input id="dbgYaw" max="90" min="-90" step="0.1" type="range"/>
+<output class="debugVal" for="dbgYaw" id="dbgYawVal">0°</output>
+</div>
+<div class="debugSection">Camera target</div>
+<div class="debugControl">
+<label for="dbgElev">Camera Y</label>
+<input id="dbgElev" max="1.6" min="-0.2" step="0.01" type="range"/>
+<output class="debugVal" for="dbgElev" id="dbgElevVal">0</output>
+</div>
+<div class="debugControl">
+<label for="dbgLift">Lift</label>
+<input id="dbgLift" max="0.85" min="-0.35" step="0.01" type="range"/>
+<output class="debugVal" for="dbgLift" id="dbgLiftVal">0</output>
+</div>
+<div class="debugControl">
+<label for="dbgTargetX">Target X</label>
+<input id="dbgTargetX" max="1.25" min="-1.25" step="0.01" type="range"/>
+<output class="debugVal" for="dbgTargetX" id="dbgTargetXVal">0</output>
+</div>
+<div class="debugControl">
+<label for="dbgTargetY">Target Y</label>
+<input id="dbgTargetY" max="0.95" min="-0.75" step="0.01" type="range"/>
+<output class="debugVal" for="dbgTargetY" id="dbgTargetYVal">0</output>
+</div>
+<div class="debugSection">Motion</div>
+<div class="debugControl">
+<label for="dbgMotion">Open ease</label>
+<input id="dbgMotion" max="7.5" min="0.8" step="0.05" type="range"/>
+<output class="debugVal" for="dbgMotion" id="dbgMotionVal">3.35</output>
+</div>
+<div class="debugControl">
+<label for="dbgRotEase">Rot ease</label>
+<input id="dbgRotEase" max="10" min="1" step="0.05" type="range"/>
+<output class="debugVal" for="dbgRotEase" id="dbgRotEaseVal">5.2</output>
+</div>
+<div class="debugControl">
+<label for="dbgCamEase">Cam ease</label>
+<input id="dbgCamEase" max="0.35" min="0.02" step="0.005" type="range"/>
+<output class="debugVal" for="dbgCamEase" id="dbgCamEaseVal">0.12</output>
+</div>
+<div class="debugControl">
+<label for="dbgFloat">Float</label>
+<input id="dbgFloat" max="0.08" min="0" step="0.001" type="range"/>
+<output class="debugVal" for="dbgFloat" id="dbgFloatVal">0.035</output>
+</div>
+<div class="debugActions">
+<button id="dbgCopy" type="button">Copy config</button>
+<button id="dbgSave" type="button">Save local</button>
+<button id="dbgFactory" type="button">Reset defaults</button>
+</div>
+<textarea aria-label="Current default settings as code" id="debugOutput" readonly="" spellcheck="false"></textarea>
+<p class="debugHint">The production default is built into the file. “Save local” only affects this browser for tuning; “Reset defaults” returns to the built-in values.</p>
+</aside>
+</div>
+
+<div aria-hidden="true" class="introScene" id="introScene">
+<div class="introCopy">
+<span class="introKicker">Interactive Diploma</span>
+<span class="introRule"></span>
+</div>
+</div>
+<div id="veil"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script src="src/intro.js"></script>
+<script src="src/screenshot-export.js"></script>
+<script src="src/app.js"></script>
+
+</body>
+</html>
