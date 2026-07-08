@@ -898,7 +898,7 @@
     text('The Board of Trustees, upon the recommendation of the faculty,', W/2, 282, 39, inkSoft, W*0.70);
     text('hereby confers upon', W/2, 324, 38, inkSoft, W*0.42);
 
-    crispText('Hans Nii Torghor Sai', W/2, 448, 92, W*0.60);
+    crispText('Hans Nii Torgbor Sai', W/2, 448, 92, W*0.60);
 
     text('the degree of', W/2, 502, 36, inkSoft, W*0.34);
     crispText('Bachelor of Science', W/2, 566, 60, W*0.48);
