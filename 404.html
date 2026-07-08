@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<title>Interactive Diploma · Hans Nii Torghor Sai</title>
+<title>Interactive Diploma · Hans Nii Torgbor Sai</title>
 <meta content="Interactive Diploma is a museum-quality 3D diploma experience with Zero-UI controls, cinematic opening, screenshot export, and a flexible premium spine." name="description"/>
-<meta content="Hans Nii Torghor Sai" name="author"/>
+<meta content="Hans Nii Torgbor Sai" name="author"/>
 <meta content="#103783" name="theme-color"/>
 <link href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2213%22%20fill%3D%22%230c1a30%22%2F%3E%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%2256%22%20height%3D%2256%22%20rx%3D%2210%22%20fill%3D%22none%22%20stroke%3D%22%23d8b56d%22%20stroke-width%3D%221.5%22%20opacity%3D%220.5%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23d8b56d%22%20stroke-width%3D%222.2%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2241.5%22%20text-anchor%3D%22middle%22%20font-family%3D%22Georgia%2C%20%27Times%20New%20Roman%27%2C%20serif%22%20font-size%3D%2226%22%20font-weight%3D%22700%22%20fill%3D%22%23e7cd80%22%3ELU%3C%2Ftext%3E%3C%2Fsvg%3E" rel="icon" type="image/svg+xml"/>
 <meta content="website" property="og:type"/>
@@ -20,7 +21,8 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Pirata+One&amp;family=UnifrakturCook:wght@700&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&amp;family=Mrs+Saint+Delafield&amp;family=Great+Vibes&amp;display=swap" rel="stylesheet"/>
 <style>
-:root{
+
+  :root{
     color-scheme: dark;
     --navy-950:#030914;
     --navy-900:#060f1e;
@@ -138,150 +140,41 @@
     opacity:.76;
   }
 
-  /* Interaction layout: frequent diploma controls stay low and centered;
-     export/fullscreen live top-right, reset is a bottom-right escape hatch,
-     and the tuning affordance stays isolated in the top-left. */
-  #ui{
-    position:absolute;
-    left:50%;
-    bottom:max(18px,env(safe-area-inset-bottom));
-    transform:translateX(-50%) translateY(10px) scale(.982);
-    width:min(410px,calc(100vw - 28px));
-    max-width:calc(100vw - 28px);
-    display:grid;
-    grid-template-columns:minmax(118px,1fr) auto;
-    gap:8px;
-    align-items:center;
-    padding:7px;
-    border:1px solid rgba(216,181,109,0.12);
-    border-radius:999px;
-    background:linear-gradient(180deg,rgba(8,16,30,0.48),rgba(4,10,19,0.34));
-    box-shadow:0 18px 52px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.055);
-    backdrop-filter:blur(18px) saturate(1.08);
-    -webkit-backdrop-filter:blur(18px) saturate(1.08);
-    pointer-events:auto;
-    user-select:none;
-    -webkit-user-select:none;
-    opacity:.18;
-    transition:opacity .28s ease, transform .28s ease, background .28s ease, border-color .28s ease, box-shadow .28s ease;
-  }
-  #appChrome.chrome-awake #ui,
-  #ui:hover,
-  #ui:focus-within{
-    opacity:.94;
-    transform:translateX(-50%) translateY(0) scale(1);
-    border-color:rgba(216,181,109,0.22);
-    background:linear-gradient(180deg,rgba(8,16,30,0.74),rgba(4,10,19,0.56));
-    box-shadow:0 22px 64px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.07);
-  }
-  #ui button,
+  /* Zero-UI chrome: only low-frequency system actions stay visible.
+     The diploma itself owns the canvas: drag the cover, orbit anywhere else,
+     hold Space/Shift to reframe, wheel/pinch to zoom. */
   .chromeButton{
     appearance:none;
     -webkit-appearance:none;
-    min-height:42px;
-    border:1px solid rgba(255,255,255,0.075);
+    width:44px;
+    min-width:44px;
+    height:44px;
+    min-height:44px;
+    display:grid;
+    place-items:center;
+    padding:0;
+    border:1px solid rgba(216,181,109,0.14);
     border-radius:999px;
-    background:rgba(255,255,255,0.026);
+    background:rgba(5,12,23,0.38);
     color:var(--text);
+    box-shadow:0 16px 44px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.055);
+    backdrop-filter:blur(18px) saturate(1.08);
+    -webkit-backdrop-filter:blur(18px) saturate(1.08);
     font:800 11px/1.15 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     cursor:pointer;
+    pointer-events:auto;
     touch-action:manipulation;
     transition:background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease, opacity .18s ease;
   }
-  #ui button:hover,
   .chromeButton:hover{
     background:rgba(216,181,109,0.12);
     border-color:rgba(216,181,109,0.28);
   }
-  #ui button:active,
   .chromeButton:active{ transform:translateY(1px) scale(.985); }
-  #ui button:focus-visible,
   .chromeButton:focus-visible{
     outline:2px solid var(--gold-soft);
     outline-offset:3px;
   }
-  .rangeCard{
-    min-width:0;
-    min-height:42px;
-    padding:8px 12px 7px;
-    border:1px solid rgba(255,255,255,0.06);
-    border-radius:999px;
-    background:rgba(255,255,255,0.018);
-    overflow:hidden;
-  }
-  .rangeMeta{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:2px;
-    color:rgba(248,239,226,0.54);
-    font:850 10px/1.1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    letter-spacing:.10em;
-    text-transform:uppercase;
-    white-space:nowrap;
-  }
-  #openValue{
-    color:var(--gold-soft);
-    letter-spacing:.02em;
-    font-size:11px;
-  }
-  #openRange{
-    width:100%;
-    min-width:0;
-    height:18px;
-    margin:0;
-    cursor:pointer;
-    accent-color:var(--gold-soft);
-  }
-  .iconCluster{
-    display:flex;
-    gap:6px;
-    align-items:center;
-    justify-content:flex-end;
-    min-width:0;
-  }
-  .iconCluster button{
-    width:42px;
-    min-width:42px;
-    padding:0;
-  }
-  .targetPad{
-    position:relative;
-    overflow:hidden;
-    display:grid;
-    place-items:center;
-  }
-  .targetPad::before,
-  .targetPad::after{
-    content:"";
-    position:absolute;
-    left:50%; top:50%;
-    transform:translate(-50%,-50%);
-    background:rgba(241,210,138,0.18);
-    pointer-events:none;
-  }
-  .targetPad::before{ width:1px; height:18px; }
-  .targetPad::after{ width:18px; height:1px; }
-  .targetDot{
-    position:relative;
-    z-index:1;
-    width:6px;
-    height:6px;
-    border-radius:999px;
-    background:var(--gold-soft);
-    box-shadow:0 0 0 4px rgba(241,210,138,0.075), 0 0 16px rgba(241,210,138,0.24);
-    opacity:.82;
-    transform:translate3d(0,0,0);
-    transition:transform .16s ease, opacity .16s ease, box-shadow .16s ease;
-  }
-  .targetPad:hover .targetDot,
-  .targetPad:focus-visible .targetDot,
-  .targetPad.is-dragging .targetDot{
-    opacity:1;
-    box-shadow:0 0 0 5px rgba(241,210,138,0.10), 0 0 20px rgba(241,210,138,0.34);
-  }
-  .targetPad.is-dragging .targetDot{ transition:none; }
   .ico{
     display:block;
     color:var(--gold-soft);
@@ -290,10 +183,16 @@
     margin-bottom:0;
   }
   .miniLabel{
-    position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
-    overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+    position:absolute !important;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+    border:0;
   }
-
   .systemTray{
     position:absolute;
     top:max(14px,env(safe-area-inset-top));
@@ -310,121 +209,53 @@
   #appChrome.chrome-awake .systemTray,
   .systemTray:hover,
   .systemTray:focus-within{ opacity:.94; }
-  .systemTray .chromeButton,
-  .escapeReset{
-    width:44px;
-    min-width:44px;
-    height:44px;
-    min-height:44px;
-    display:grid;
-    place-items:center;
-    padding:0;
-    background:rgba(5,12,23,0.38);
-    border-color:rgba(216,181,109,0.14);
-    box-shadow:0 16px 44px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.055);
-    backdrop-filter:blur(18px) saturate(1.08);
-    -webkit-backdrop-filter:blur(18px) saturate(1.08);
-  }
   .escapeReset{
     position:absolute;
     right:max(14px,env(safe-area-inset-right));
     left:auto;
     bottom:max(20px,env(safe-area-inset-bottom));
     z-index:43;
-    pointer-events:auto;
     opacity:.30;
   }
   #appChrome.chrome-awake .escapeReset,
   .escapeReset:hover,
   .escapeReset:focus-visible{ opacity:.94; }
+  body.reframe-ready .cursorHint.show{
+    opacity:.96;
+    color:var(--gold-soft);
+    border-color:rgba(216,181,109,0.40);
+    background:rgba(7,14,27,0.76);
+  }
+  body.reframe-active .cursorHint.show{
+    opacity:1;
+    color:var(--gold-soft);
+    border-color:rgba(241,210,138,0.48);
+    background:rgba(10,19,35,0.82);
+  }
 
   @media (pointer:coarse){
-    #ui{ opacity:.68; transform:translateX(-50%) translateY(0) scale(1); }
     .systemTray,.escapeReset{ opacity:.62; }
   }
-
   @media (max-width: 680px){
-    #ui{
-      width:calc(100vw - 18px);
-      grid-template-columns:minmax(96px,1fr) auto;
+    .systemTray{
+      top:max(10px,env(safe-area-inset-top));
+      right:max(10px,env(safe-area-inset-right));
       gap:6px;
-      padding:6px;
-      bottom:max(10px,env(safe-area-inset-bottom));
     }
-    .rangeCard{ min-height:40px; padding:7px 10px 6px; }
-    .rangeMeta{ font-size:9px; letter-spacing:.08em; }
-    #openRange{ height:18px; }
-    .iconCluster{ gap:5px; }
-    .iconCluster button{ width:38px; min-width:38px; min-height:40px; }
-    .systemTray{ top:max(10px,env(safe-area-inset-top)); right:max(10px,env(safe-area-inset-right)); left:auto; gap:6px; }
-    .systemTray .chromeButton,.escapeReset{ width:40px; min-width:40px; height:40px; min-height:40px; }
+    .chromeButton{ width:40px; min-width:40px; height:40px; min-height:40px; }
     .escapeReset{
       right:max(10px,env(safe-area-inset-right));
-      left:auto;
-      bottom:max(76px,calc(env(safe-area-inset-bottom) + 76px));
-      top:auto;
+      bottom:max(12px,env(safe-area-inset-bottom));
     }
   }
-  @media (max-width: 360px){
-    #ui{
-      width:calc(100vw - 12px);
-      grid-template-columns:minmax(78px,1fr) auto;
-      gap:5px;
-      padding:5px;
-    }
-    .rangeCard{ padding:6px 8px 5px; min-height:38px; }
-    .rangeMeta span[aria-hidden="true"]{ display:none; }
-    .rangeMeta{ justify-content:flex-end; }
-    .iconCluster button{ width:34px; min-width:34px; min-height:38px; }
-    .ico{ font-size:16px; }
-    .targetPad::before{ height:14px; }
-    .targetPad::after{ width:14px; }
-  }
-  @media (max-height: 520px) and (orientation: landscape){
-    #ui{
-      bottom:max(8px,env(safe-area-inset-bottom));
-      width:min(390px,calc(100vw - 150px));
-    }
-    .escapeReset{
-      bottom:max(10px,env(safe-area-inset-bottom));
-      top:auto;
-      right:max(10px,env(safe-area-inset-right));
-      left:auto;
-    }
-  }
-
   @media (max-width: 430px){
-    #ui{
-      width:calc(100vw - 12px);
-      grid-template-columns:minmax(72px,1fr) auto;
-      gap:5px;
-      padding:5px;
-    }
-    .rangeCard{ min-height:38px; padding:6px 8px 5px; }
-    .rangeMeta{ font-size:8.5px; letter-spacing:.07em; }
-    .iconCluster{ gap:4px; }
-    .iconCluster button{ width:34px; min-width:34px; min-height:38px; }
-    .systemTray .chromeButton,.escapeReset,.debugToggle{ width:38px; min-width:38px; height:38px; min-height:38px; }
-    .escapeReset{ bottom:max(70px,calc(env(safe-area-inset-bottom) + 70px)); }
-  }
-
-  @media (max-width: 310px){
-    #ui{ grid-template-columns:1fr auto; width:calc(100vw - 8px); }
-    .rangeCard{ padding-inline:7px; }
-    .iconCluster button{ width:31px; min-width:31px; min-height:36px; }
-    .ico{ font-size:15px; }
+    .chromeButton{ width:38px; min-width:38px; height:38px; min-height:38px; }
     .systemTray{ gap:5px; }
-    .systemTray .chromeButton,.escapeReset,.debugToggle{ width:36px; min-width:36px; height:36px; min-height:36px; }
   }
-
-  @media (max-width: 260px){
-    #ui{
-      grid-template-columns:1fr;
-      border-radius:22px;
-      max-width:calc(100vw - 8px);
-    }
-    .iconCluster{ justify-content:center; }
-    .escapeReset{ bottom:max(112px,calc(env(safe-area-inset-bottom) + 112px)); }
+  @media (max-width: 310px){
+    .chromeButton{ width:36px; min-width:36px; height:36px; min-height:36px; }
+    .systemTray{ gap:5px; }
+    .ico{ font-size:15px; }
   }
 
   /* Optional tuning tools: icon-only, unobtrusive, and hidden until needed. */
@@ -668,7 +499,6 @@ body.intro-active .introScene{
   30%{ opacity:1; }
   100%{ transform:scaleX(1); opacity:.74; }
 }
-body.intro-active #ui,
 body.intro-active .systemTray,
 body.intro-active .escapeReset,
 body.intro-active .debugToggle{
@@ -697,6 +527,7 @@ body.is-capturing #veil{
   }
   .introScene{ display:none; }
 }
+
 </style>
 </head>
 <body>
@@ -711,21 +542,6 @@ body.is-capturing #veil{
 <button aria-label="Fullscreen" class="chromeButton" data-tip="Fullscreen" id="btnFullscreen" type="button"><span class="ico">⛶</span><span class="miniLabel">Full</span></button>
 </div>
 <button aria-label="Reset view" class="chromeButton escapeReset" data-tip="Reset view" id="btnReset" type="button"><span class="ico">↻</span><span class="miniLabel">Reset</span></button>
-<div aria-label="Diploma view controls" id="ui">
-<div class="rangeCard">
-<label class="rangeMeta" for="openRange">
-<span aria-hidden="true">Cover</span>
-<span class="srOnly">Cover open amount</span>
-<span id="openValue">100%</span>
-</label>
-<input aria-label="Cover open amount" data-tip="Slide cover" id="openRange" max="100" min="0" type="range" value="100"/>
-</div>
-<div aria-label="Camera controls" class="iconCluster">
-<button aria-label="Zoom in" data-tip="Closer" id="btnZoomIn" type="button"><span class="ico">＋</span><span class="miniLabel">Closer</span></button>
-<button aria-label="Zoom out" data-tip="Wider" id="btnZoomOut" type="button"><span class="ico">−</span><span class="miniLabel">Wider</span></button>
-<button aria-label="Move camera target" class="targetPad" data-tip="Reframe" id="targetPad" title="Drag to reframe. Double-click to center." type="button"><span aria-hidden="true" class="targetDot" id="targetDot"></span><span class="miniLabel">Frame</span></button>
-</div>
-</div>
 <button aria-controls="debugPanel" aria-expanded="false" aria-label="Open tuning panel" class="debugToggle" id="debugToggle" type="button">
 <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24">
 <path d="M4 7h10"></path><path d="M18 7h2"></path><circle cx="16" cy="7" r="2"></circle>
@@ -820,7 +636,6 @@ body.is-capturing #veil{
 <p class="debugHint">The production default is built into the file. “Save local” only affects this browser for tuning; “Reset defaults” returns to the built-in values.</p>
 </aside>
 </div>
-
 <div aria-hidden="true" class="introScene" id="introScene">
 <div class="introCopy">
 <span class="introKicker">Interactive Diploma</span>
@@ -829,11 +644,7 @@ body.is-capturing #veil{
 </div>
 <div id="veil"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
 <script>
-/* ============================================================
-   Interactive Diploma — intro.js
-   ============================================================ */
 /* Short cinematic reveal controller. Camera/cover choreography lives in app.js. */
 (function(){
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -859,11 +670,9 @@ body.is-capturing #veil{
 
   window.InteractiveDiplomaIntro = { shouldRun, start, finish };
 })();
+
 </script>
 <script>
-/* ============================================================
-   Interactive Diploma — screenshot-export.js
-   ============================================================ */
 /* High-quality canvas export for the Interactive Diploma viewer. */
 (function(){
   function nextFrame(){ return new Promise(resolve=>requestAnimationFrame(()=>resolve())); }
@@ -930,11 +739,9 @@ body.is-capturing #veil{
     }
   };
 })();
+
 </script>
 <script>
-/* ============================================================
-   Interactive Diploma — app.js
-   ============================================================ */
 (async function(){
 
   function quietFail(message){
@@ -1835,7 +1642,7 @@ body.is-capturing #veil{
     text('The Board of Trustees, upon the recommendation of the faculty,', W/2, 282, 39, inkSoft, W*0.70);
     text('hereby confers upon', W/2, 324, 38, inkSoft, W*0.42);
 
-    crispText('Hans Nii Torghor Sai', W/2, 448, 92, W*0.60);
+    crispText('Hans Nii Torgbor Sai', W/2, 448, 92, W*0.60);
 
     text('the degree of', W/2, 502, 36, inkSoft, W*0.34);
     crispText('Bachelor of Science', W/2, 566, 60, W*0.48);
@@ -2087,12 +1894,6 @@ body.is-capturing #veil{
   let autoSpin = false;
 
   const ui = {
-    openRange: document.getElementById('openRange'),
-    openValue: document.getElementById('openValue'),
-    zoomInBtn: document.getElementById('btnZoomIn'),
-    zoomOutBtn: document.getElementById('btnZoomOut'),
-    targetPad: document.getElementById('targetPad'),
-    targetDot: document.getElementById('targetDot'),
     resetBtn: document.getElementById('btnReset'),
     fullscreenBtn: document.getElementById('btnFullscreen'),
     captureBtn: document.getElementById('btnCapture'),
@@ -2184,11 +1985,9 @@ body.is-capturing #veil{
     if(w < 820) return 5.7;
     return 5.15;
   }
-  let isCoverSliderActive = false;
   function syncOpenUI(v=openTarget){
-    const pct = Math.round(clamp01(v)*100);
-    if(ui.openRange && !isCoverSliderActive) ui.openRange.value = String(pct);
-    if(ui.openValue) ui.openValue.textContent = pct + '%';
+    // No visible cover slider in the zero-UI build; keep this hook so debug and
+    // cover-drag code can continue to sync cleanly without branching.
   }
   function setOpenTarget(v){
     openTarget = clamp01(v);
@@ -2199,11 +1998,8 @@ body.is-capturing #veil{
   function clampTargetAxis(v, min, max){ return Math.min(max, Math.max(min, v)); }
   function targetHome(){ return runtimeViewSettings(); }
   function syncTargetPad(){
-    if(!ui.targetDot) return;
-    const home = targetHome();
-    const dx = clampTargetAxis((camTarget.x - home.targetX) / 0.72, -1, 1) * 11;
-    const dy = clampTargetAxis((home.targetY - camTarget.y) / 0.72, -1, 1) * 11;
-    ui.targetDot.style.transform = 'translate3d(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px,0)';
+    // Reframe is now zero-UI: Space/Shift + drag on the canvas or a two-finger
+    // touch pan. This remains as a compatibility hook for resize/reset/debug flows.
   }
   function setCameraTarget(x, y, quiet=false){
     camTarget.x = clampTargetAxis(x, TARGET_LIMITS.xMin, TARGET_LIMITS.xMax);
@@ -2220,6 +2016,17 @@ body.is-capturing #veil{
     targetWasAdjusted = false;
     syncTargetPad();
     syncDebugPanel(true);
+  }
+  function targetPanScale(){
+    // Scale reframe distance with camera distance so dragging feels consistent
+    // whether the viewer is zoomed in or pulled back. The sign is intentionally
+    // inverted from raw camera target movement: the diploma should follow the
+    // user's finger/cursor on screen, not the invisible look-at target.
+    return Math.min(0.0064, Math.max(0.0036, camDist * 0.00102));
+  }
+  function applyNaturalReframe(startX, startY, dx, dy, multiplier=1){
+    const s = targetPanScale() * multiplier;
+    setCameraTarget(startX - dx * s, startY + dy * s, true);
   }
   function setAutoSpin(v){ autoSpin = !!v; }
   function focusReadable(){
@@ -2279,6 +2086,8 @@ body.is-capturing #veil{
   const productionRotY = ()=>((window.innerWidth || 1024) < 760 ? -0.03 : -0.06);
   let rotTarget = {x: initialView.rotX, y: initialView.rotY};
   let rotCurrent = {x: rotTarget.x, y: rotTarget.y};
+  let canvasReframeDrag = null;
+  let reframeModifier = false;
   camDist = clampZoom(initialView.camDist);
 
   function introLerp(a,b,t){ return a + (b-a) * t; }
@@ -2332,7 +2141,7 @@ body.is-capturing #veil{
     return !prefersReducedMotion &&
       !introTimeline.active &&
       !dragMode &&
-      !targetPadDrag &&
+      !canvasReframeDrag &&
       !document.hidden &&
       (!debugUi.panel || debugUi.panel.hidden) &&
       (now - lastIntentAt) >= IDLE_ATTRACT_DELAY_MS;
@@ -2482,6 +2291,9 @@ body.is-capturing #veil{
     savedView = {};
     applyViewSettings(factorySettings());
   });
+  // The camera-tuning panel is a developer tool. Keep it out of the public build
+  // unless the visitor opts in with ?debug=1. When it's off, the gear button is
+  // removed from the DOM and the D shortcut does nothing.
   const debugEnabled = new URLSearchParams(window.location.search).get('debug') === '1';
   if(debugEnabled){
     window.addEventListener('keydown', (e)=>{
@@ -2497,25 +2309,6 @@ body.is-capturing #veil{
     if(debugUi.panel) debugUi.panel.hidden = true;
   }
   syncDebugPanel(true);
-  ui.openRange && ui.openRange.addEventListener('pointerdown', ()=>{ isCoverSliderActive = true; });
-  ui.openRange && ui.openRange.addEventListener('pointerup', ()=>{ isCoverSliderActive = false; syncOpenUI(openTarget); });
-  ui.openRange && ui.openRange.addEventListener('pointercancel', ()=>{ isCoverSliderActive = false; syncOpenUI(openTarget); });
-  ui.openRange && ui.openRange.addEventListener('blur', ()=>{ isCoverSliderActive = false; syncOpenUI(openTarget); });
-  ui.openRange && ui.openRange.addEventListener('input', (e)=>{
-    markUserIntent();
-    // Cover control is intentionally isolated: it only changes the hinge angle.
-    // It must not alter camera distance, pitch, yaw, target, or FOV.
-    setAutoSpin(false);
-    setOpenTarget(Number(e.currentTarget.value)/100);
-    setCursorHint(Math.round(openTarget*100) + '% open', true);
-    wakeChrome(1800);
-  });
-  ui.openRange && ui.openRange.addEventListener('change', ()=>{
-    // Keep the selected cover amount exactly as chosen. No camera/view snapping.
-    syncOpenUI(openTarget);
-  });
-  ui.zoomInBtn && ui.zoomInBtn.addEventListener('click', ()=>{ setAutoSpin(false); camDist = clampZoom(camDist - 0.42); setCursorHint('Closer', true); wakeChrome(1800); });
-  ui.zoomOutBtn && ui.zoomOutBtn.addEventListener('click', ()=>{ setAutoSpin(false); camDist = clampZoom(camDist + 0.42); setCursorHint('Wider', true); wakeChrome(1800); });
   ui.resetBtn && ui.resetBtn.addEventListener('click', ()=>{ resetPresentation(); setCursorHint('Reset', true); wakeChrome(1800); });
   ui.fullscreenBtn && ui.fullscreenBtn.addEventListener('click', ()=>{
     const root = document.documentElement;
@@ -2527,56 +2320,6 @@ body.is-capturing #veil{
       setCursorHint('Windowed', true);
     }
   });
-
-  let targetPadDrag = null;
-  if(ui.targetPad){
-    ui.targetPad.addEventListener('pointerdown', (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      setAutoSpin(false);
-      targetPadDrag = {x:e.clientX, y:e.clientY, startX:camTarget.x, startY:camTarget.y, moved:false};
-      ui.targetPad.classList.add('is-dragging');
-      ui.targetPad.setPointerCapture && ui.targetPad.setPointerCapture(e.pointerId);
-      setCursorHint('Reframe', true);
-      wakeChrome(2400);
-    });
-    ui.targetPad.addEventListener('pointermove', (e)=>{
-      if(!targetPadDrag) return;
-      e.preventDefault();
-      const dx = e.clientX - targetPadDrag.x;
-      const dy = e.clientY - targetPadDrag.y;
-      if(Math.abs(dx) + Math.abs(dy) > 2) targetPadDrag.moved = true;
-      setCameraTarget(targetPadDrag.startX + dx * 0.006, targetPadDrag.startY - dy * 0.006);
-      wakeChrome(1800);
-    });
-    function finishTargetPad(e){
-      if(!targetPadDrag) return;
-      const moved = targetPadDrag.moved;
-      targetPadDrag = null;
-      ui.targetPad.classList.remove('is-dragging');
-      if(e && ui.targetPad.releasePointerCapture && e.pointerId !== undefined){
-        try{ ui.targetPad.releasePointerCapture(e.pointerId); }catch(err){}
-      }
-      setCursorHint(moved ? 'Framed' : 'Reframe', false, true);
-    }
-    ui.targetPad.addEventListener('pointerup', finishTargetPad);
-    ui.targetPad.addEventListener('pointercancel', finishTargetPad);
-    ui.targetPad.addEventListener('dblclick', (e)=>{
-      e.preventDefault();
-      centerCameraTarget();
-      setCursorHint('Centered', true);
-      wakeChrome(1800);
-    });
-    ui.targetPad.addEventListener('keydown', (e)=>{
-      const step = e.shiftKey ? 0.12 : 0.04;
-      if(e.key === 'ArrowLeft'){ e.preventDefault(); setCameraTarget(camTarget.x - step, camTarget.y); }
-      if(e.key === 'ArrowRight'){ e.preventDefault(); setCameraTarget(camTarget.x + step, camTarget.y); }
-      if(e.key === 'ArrowUp'){ e.preventDefault(); setCameraTarget(camTarget.x, camTarget.y + step); }
-      if(e.key === 'ArrowDown'){ e.preventDefault(); setCameraTarget(camTarget.x, camTarget.y - step); }
-      if(e.key === 'Home' || e.key === 'Enter' || e.key === ' '){ e.preventDefault(); centerCameraTarget(); setCursorHint('Centered', true); }
-      wakeChrome(1800);
-    });
-  }
 
   function pickIsCover(clientX, clientY){
     const rect = canvas.getBoundingClientRect();
@@ -2611,6 +2354,19 @@ body.is-capturing #veil{
     ui.cursorHint.classList.toggle('soft', !!soft);
     ui.cursorHint.style.transform = 'translate3d(' + (lastPointer.x + 18) + 'px,' + (lastPointer.y + 16) + 'px,0)';
   }
+  function editableActive(){
+    const active = document.activeElement;
+    return !!(active && ['INPUT','TEXTAREA','SELECT'].includes(active.tagName));
+  }
+  function setReframeReady(on){
+    reframeModifier = !!on;
+    document.body.classList.toggle('reframe-ready', reframeModifier);
+    if(reframeModifier) setCursorHint('Drag to reframe', true);
+    else if(dragMode !== 'reframe') document.body.classList.remove('reframe-active');
+  }
+  function isReframeGesture(e){
+    return !!(reframeModifier || e.shiftKey || e.button === 1 || e.button === 2 || (e.buttons & 4) || (e.buttons & 2));
+  }
   if(window.InteractiveDiplomaCapture){
     window.InteractiveDiplomaCapture.install({
       button: ui.captureBtn,
@@ -2635,8 +2391,12 @@ body.is-capturing #veil{
       return;
     }
     if(dragMode === 'cover') setCursorHint('Open cover', true);
+    else if(dragMode === 'reframe') setCursorHint('Reframing', true);
     else if(dragMode === 'orbit') setCursorHint('Orbit', true);
-    else if(e.target === canvas) setCursorHint(pickIsCover(e.clientX, e.clientY) ? 'Drag cover' : 'Drag to orbit', false, true);
+    else if(e.target === canvas){
+      if(reframeModifier || e.shiftKey) setCursorHint('Drag to reframe', true);
+      else setCursorHint(pickIsCover(e.clientX, e.clientY) ? 'Drag cover' : 'Drag orbit · Space reframe', false, true);
+    }
     else setCursorHint('', false);
   }
   document.addEventListener('pointermove', (e)=>{ wakeChrome(); updateSmartCursor(e); }, {passive:true});
@@ -2650,36 +2410,51 @@ body.is-capturing #veil{
   function onDown(e){
     setAutoSpin(false);
     const x = e.clientX, y = e.clientY;
-    dragMode = pickIsCover(x,y) ? 'cover' : 'orbit';
+    const wantsReframe = isReframeGesture(e);
+    dragMode = wantsReframe ? 'reframe' : (pickIsCover(x,y) ? 'cover' : 'orbit');
+    if(dragMode === 'reframe'){
+      canvasReframeDrag = {x, y, startX:camTarget.x, startY:camTarget.y};
+      document.body.classList.add('reframe-active');
+      setCursorHint('Reframing', true);
+    }
     last.x = x; last.y = y;
     canvas.classList.add('grabbing');
     wakeChrome(1200);
-    setCursorHint(dragMode === 'cover' ? 'Open cover' : 'Orbit', true);
+    if(dragMode !== 'reframe') setCursorHint(dragMode === 'cover' ? 'Open cover' : 'Orbit', true);
     canvas.setPointerCapture && e.pointerId!==undefined && canvas.setPointerCapture(e.pointerId);
   }
   function onMove(e){
     if(!dragMode) return;
     const x = e.clientX, y = e.clientY;
     const dx = x-last.x, dy = y-last.y;
-    last.x=x; last.y=y;
     if(dragMode==='cover'){
       openTarget += (-dy) * 0.0036;
       openTarget = Math.min(1, Math.max(0, openTarget));
       syncOpenUI(openTarget);
       setCursorHint(Math.round(openTarget*100) + '% open', true);
+    } else if(dragMode === 'reframe' && canvasReframeDrag){
+      const totalDx = x - canvasReframeDrag.x;
+      const totalDy = y - canvasReframeDrag.y;
+      applyNaturalReframe(canvasReframeDrag.startX, canvasReframeDrag.startY, totalDx, totalDy);
+      setCursorHint('Reframing', true);
     } else {
       rotTarget.y += dx*0.006;
       rotTarget.x += dy*0.006;
       rotVel.x = dy*0.006; rotVel.y = dx*0.006;
     }
+    last.x=x; last.y=y;
   }
   function onUp(e){
     const endedCoverDrag = dragMode === 'cover';
+    const endedReframeDrag = dragMode === 'reframe';
     dragMode = null;
+    canvasReframeDrag = null;
     canvas.classList.remove('grabbing');
-    setCursorHint(endedCoverDrag ? Math.round(openTarget*100) + '% open' : 'Set', false, true);
+    document.body.classList.remove('reframe-active');
+    if(reframeModifier) document.body.classList.add('reframe-ready');
+    setCursorHint(endedCoverDrag ? Math.round(openTarget*100) + '% open' : (endedReframeDrag ? 'Framed' : 'Set'), false, true);
     if(endedCoverDrag){
-      // Dragging the physical cover should behave like the slider: hinge only, no camera/view changes.
+      // Dragging the physical cover should behave like the old slider: hinge only, no camera/view changes.
       syncOpenUI(openTarget);
     }
   }
@@ -2726,7 +2501,15 @@ body.is-capturing #veil{
   canvas.addEventListener('touchstart', (e)=>{
     if(e.touches.length===2){
       const [a,b] = e.touches;
-      pinchStart = {dist: Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY), camDist};
+      const midX = (a.clientX + b.clientX) / 2;
+      const midY = (a.clientY + b.clientY) / 2;
+      pinchStart = {
+        dist: Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY),
+        midX, midY,
+        camDist,
+        targetX: camTarget.x,
+        targetY: camTarget.y
+      };
       dragMode = null;
     }
   }, {passive:true});
@@ -2735,11 +2518,95 @@ body.is-capturing #veil{
       e.preventDefault();
       const [a,b] = e.touches;
       const d = Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
+      const midX = (a.clientX + b.clientX) / 2;
+      const midY = (a.clientY + b.clientY) / 2;
       const scale = pinchStart.dist / Math.max(1,d);
       camDist = clampZoom(pinchStart.camDist * scale);
+      // Two-finger drag reframes while pinch zooms. Single-finger drag is kept for orbit/cover,
+      // so pan and orbit never compete on touch screens. Reframing follows the
+      // movement of the fingers on screen for a direct-manipulation feel.
+      applyNaturalReframe(pinchStart.targetX, pinchStart.targetY, midX - pinchStart.midX, midY - pinchStart.midY, 0.88);
     }
   }, {passive:false});
   canvas.addEventListener('touchend', (e)=>{ if(e.touches.length<2) pinchStart=null; }, {passive:true});
+
+
+  function handleKeyboardControls(e){
+    if(editableActive() || e.metaKey || e.ctrlKey || e.altKey) return;
+    if(e.code === 'Space'){
+      e.preventDefault();
+      if(!reframeModifier) setReframeReady(true);
+      return;
+    }
+    const k = e.key;
+    const lower = typeof k === 'string' ? k.toLowerCase() : '';
+    if(k === '+' || k === '='){
+      e.preventDefault();
+      setAutoSpin(false);
+      camDist = clampZoom(camDist - 0.42);
+      setCursorHint('Closer', true);
+      wakeChrome(1600);
+      return;
+    }
+    if(k === '-' || k === '_'){
+      e.preventDefault();
+      setAutoSpin(false);
+      camDist = clampZoom(camDist + 0.42);
+      setCursorHint('Wider', true);
+      wakeChrome(1600);
+      return;
+    }
+    if(lower === 'o'){
+      e.preventDefault();
+      toggleCoverSpring();
+      return;
+    }
+    if(lower === 'r'){
+      e.preventDefault();
+      resetPresentation();
+      setCursorHint('Reset', true);
+      wakeChrome(1600);
+      return;
+    }
+    if(k === '0'){
+      e.preventDefault();
+      centerCameraTarget();
+      setCursorHint('Centered', true);
+      wakeChrome(1600);
+      return;
+    }
+    if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(k)){
+      e.preventDefault();
+      setAutoSpin(false);
+      if(e.shiftKey || reframeModifier){
+        const step = e.shiftKey ? 0.10 : 0.055;
+        // Arrow reframing also follows screen direction: Right moves the diploma
+        // right, Up moves it up. Because camTarget is a look-at point, that means
+        // changing the target in the opposite direction internally.
+        if(k === 'ArrowLeft') setCameraTarget(camTarget.x + step, camTarget.y, true);
+        if(k === 'ArrowRight') setCameraTarget(camTarget.x - step, camTarget.y, true);
+        if(k === 'ArrowUp') setCameraTarget(camTarget.x, camTarget.y - step, true);
+        if(k === 'ArrowDown') setCameraTarget(camTarget.x, camTarget.y + step, true);
+        setCursorHint('Reframed', true);
+      }else{
+        const rotStep = e.shiftKey ? 0.035 : 0.055;
+        if(k === 'ArrowLeft') rotTarget.y -= rotStep;
+        if(k === 'ArrowRight') rotTarget.y += rotStep;
+        if(k === 'ArrowUp') rotTarget.x -= rotStep;
+        if(k === 'ArrowDown') rotTarget.x += rotStep;
+        setCursorHint('Orbit', true);
+      }
+      wakeChrome(1600);
+    }
+  }
+  window.addEventListener('keydown', handleKeyboardControls);
+  window.addEventListener('keyup', (e)=>{
+    if(e.code === 'Space'){
+      setReframeReady(false);
+      setCursorHint('', false);
+    }
+  });
+  window.addEventListener('blur', ()=>setReframeReady(false));
 
   function onResize(){
     const stage = document.getElementById('stage');
@@ -2881,7 +2748,7 @@ body.is-capturing #veil{
   });
 
 })();
-</script>
 
+</script>
 </body>
 </html>

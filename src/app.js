@@ -1150,12 +1150,6 @@
   let autoSpin = false;
 
   const ui = {
-    openRange: document.getElementById('openRange'),
-    openValue: document.getElementById('openValue'),
-    zoomInBtn: document.getElementById('btnZoomIn'),
-    zoomOutBtn: document.getElementById('btnZoomOut'),
-    targetPad: document.getElementById('targetPad'),
-    targetDot: document.getElementById('targetDot'),
     resetBtn: document.getElementById('btnReset'),
     fullscreenBtn: document.getElementById('btnFullscreen'),
     captureBtn: document.getElementById('btnCapture'),
@@ -1247,11 +1241,9 @@
     if(w < 820) return 5.7;
     return 5.15;
   }
-  let isCoverSliderActive = false;
   function syncOpenUI(v=openTarget){
-    const pct = Math.round(clamp01(v)*100);
-    if(ui.openRange && !isCoverSliderActive) ui.openRange.value = String(pct);
-    if(ui.openValue) ui.openValue.textContent = pct + '%';
+    // No visible cover slider in the zero-UI build; keep this hook so debug and
+    // cover-drag code can continue to sync cleanly without branching.
   }
   function setOpenTarget(v){
     openTarget = clamp01(v);
@@ -1262,11 +1254,8 @@
   function clampTargetAxis(v, min, max){ return Math.min(max, Math.max(min, v)); }
   function targetHome(){ return runtimeViewSettings(); }
   function syncTargetPad(){
-    if(!ui.targetDot) return;
-    const home = targetHome();
-    const dx = clampTargetAxis((camTarget.x - home.targetX) / 0.72, -1, 1) * 11;
-    const dy = clampTargetAxis((home.targetY - camTarget.y) / 0.72, -1, 1) * 11;
-    ui.targetDot.style.transform = 'translate3d(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px,0)';
+    // Reframe is now zero-UI: Space/Shift + drag on the canvas or a two-finger
+    // touch pan. This remains as a compatibility hook for resize/reset/debug flows.
   }
   function setCameraTarget(x, y, quiet=false){
     camTarget.x = clampTargetAxis(x, TARGET_LIMITS.xMin, TARGET_LIMITS.xMax);
@@ -1283,6 +1272,17 @@
     targetWasAdjusted = false;
     syncTargetPad();
     syncDebugPanel(true);
+  }
+  function targetPanScale(){
+    // Scale reframe distance with camera distance so dragging feels consistent
+    // whether the viewer is zoomed in or pulled back. The sign is intentionally
+    // inverted from raw camera target movement: the diploma should follow the
+    // user's finger/cursor on screen, not the invisible look-at target.
+    return Math.min(0.0064, Math.max(0.0036, camDist * 0.00102));
+  }
+  function applyNaturalReframe(startX, startY, dx, dy, multiplier=1){
+    const s = targetPanScale() * multiplier;
+    setCameraTarget(startX - dx * s, startY + dy * s, true);
   }
   function setAutoSpin(v){ autoSpin = !!v; }
   function focusReadable(){
@@ -1342,6 +1342,8 @@
   const productionRotY = ()=>((window.innerWidth || 1024) < 760 ? -0.03 : -0.06);
   let rotTarget = {x: initialView.rotX, y: initialView.rotY};
   let rotCurrent = {x: rotTarget.x, y: rotTarget.y};
+  let canvasReframeDrag = null;
+  let reframeModifier = false;
   camDist = clampZoom(initialView.camDist);
 
   function introLerp(a,b,t){ return a + (b-a) * t; }
@@ -1395,7 +1397,7 @@
     return !prefersReducedMotion &&
       !introTimeline.active &&
       !dragMode &&
-      !targetPadDrag &&
+      !canvasReframeDrag &&
       !document.hidden &&
       (!debugUi.panel || debugUi.panel.hidden) &&
       (now - lastIntentAt) >= IDLE_ATTRACT_DELAY_MS;
@@ -1563,25 +1565,6 @@
     if(debugUi.panel) debugUi.panel.hidden = true;
   }
   syncDebugPanel(true);
-  ui.openRange && ui.openRange.addEventListener('pointerdown', ()=>{ isCoverSliderActive = true; });
-  ui.openRange && ui.openRange.addEventListener('pointerup', ()=>{ isCoverSliderActive = false; syncOpenUI(openTarget); });
-  ui.openRange && ui.openRange.addEventListener('pointercancel', ()=>{ isCoverSliderActive = false; syncOpenUI(openTarget); });
-  ui.openRange && ui.openRange.addEventListener('blur', ()=>{ isCoverSliderActive = false; syncOpenUI(openTarget); });
-  ui.openRange && ui.openRange.addEventListener('input', (e)=>{
-    markUserIntent();
-    // Cover control is intentionally isolated: it only changes the hinge angle.
-    // It must not alter camera distance, pitch, yaw, target, or FOV.
-    setAutoSpin(false);
-    setOpenTarget(Number(e.currentTarget.value)/100);
-    setCursorHint(Math.round(openTarget*100) + '% open', true);
-    wakeChrome(1800);
-  });
-  ui.openRange && ui.openRange.addEventListener('change', ()=>{
-    // Keep the selected cover amount exactly as chosen. No camera/view snapping.
-    syncOpenUI(openTarget);
-  });
-  ui.zoomInBtn && ui.zoomInBtn.addEventListener('click', ()=>{ setAutoSpin(false); camDist = clampZoom(camDist - 0.42); setCursorHint('Closer', true); wakeChrome(1800); });
-  ui.zoomOutBtn && ui.zoomOutBtn.addEventListener('click', ()=>{ setAutoSpin(false); camDist = clampZoom(camDist + 0.42); setCursorHint('Wider', true); wakeChrome(1800); });
   ui.resetBtn && ui.resetBtn.addEventListener('click', ()=>{ resetPresentation(); setCursorHint('Reset', true); wakeChrome(1800); });
   ui.fullscreenBtn && ui.fullscreenBtn.addEventListener('click', ()=>{
     const root = document.documentElement;
@@ -1593,56 +1576,6 @@
       setCursorHint('Windowed', true);
     }
   });
-
-  let targetPadDrag = null;
-  if(ui.targetPad){
-    ui.targetPad.addEventListener('pointerdown', (e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      setAutoSpin(false);
-      targetPadDrag = {x:e.clientX, y:e.clientY, startX:camTarget.x, startY:camTarget.y, moved:false};
-      ui.targetPad.classList.add('is-dragging');
-      ui.targetPad.setPointerCapture && ui.targetPad.setPointerCapture(e.pointerId);
-      setCursorHint('Reframe', true);
-      wakeChrome(2400);
-    });
-    ui.targetPad.addEventListener('pointermove', (e)=>{
-      if(!targetPadDrag) return;
-      e.preventDefault();
-      const dx = e.clientX - targetPadDrag.x;
-      const dy = e.clientY - targetPadDrag.y;
-      if(Math.abs(dx) + Math.abs(dy) > 2) targetPadDrag.moved = true;
-      setCameraTarget(targetPadDrag.startX + dx * 0.006, targetPadDrag.startY - dy * 0.006);
-      wakeChrome(1800);
-    });
-    function finishTargetPad(e){
-      if(!targetPadDrag) return;
-      const moved = targetPadDrag.moved;
-      targetPadDrag = null;
-      ui.targetPad.classList.remove('is-dragging');
-      if(e && ui.targetPad.releasePointerCapture && e.pointerId !== undefined){
-        try{ ui.targetPad.releasePointerCapture(e.pointerId); }catch(err){}
-      }
-      setCursorHint(moved ? 'Framed' : 'Reframe', false, true);
-    }
-    ui.targetPad.addEventListener('pointerup', finishTargetPad);
-    ui.targetPad.addEventListener('pointercancel', finishTargetPad);
-    ui.targetPad.addEventListener('dblclick', (e)=>{
-      e.preventDefault();
-      centerCameraTarget();
-      setCursorHint('Centered', true);
-      wakeChrome(1800);
-    });
-    ui.targetPad.addEventListener('keydown', (e)=>{
-      const step = e.shiftKey ? 0.12 : 0.04;
-      if(e.key === 'ArrowLeft'){ e.preventDefault(); setCameraTarget(camTarget.x - step, camTarget.y); }
-      if(e.key === 'ArrowRight'){ e.preventDefault(); setCameraTarget(camTarget.x + step, camTarget.y); }
-      if(e.key === 'ArrowUp'){ e.preventDefault(); setCameraTarget(camTarget.x, camTarget.y + step); }
-      if(e.key === 'ArrowDown'){ e.preventDefault(); setCameraTarget(camTarget.x, camTarget.y - step); }
-      if(e.key === 'Home' || e.key === 'Enter' || e.key === ' '){ e.preventDefault(); centerCameraTarget(); setCursorHint('Centered', true); }
-      wakeChrome(1800);
-    });
-  }
 
   function pickIsCover(clientX, clientY){
     const rect = canvas.getBoundingClientRect();
@@ -1677,6 +1610,19 @@
     ui.cursorHint.classList.toggle('soft', !!soft);
     ui.cursorHint.style.transform = 'translate3d(' + (lastPointer.x + 18) + 'px,' + (lastPointer.y + 16) + 'px,0)';
   }
+  function editableActive(){
+    const active = document.activeElement;
+    return !!(active && ['INPUT','TEXTAREA','SELECT'].includes(active.tagName));
+  }
+  function setReframeReady(on){
+    reframeModifier = !!on;
+    document.body.classList.toggle('reframe-ready', reframeModifier);
+    if(reframeModifier) setCursorHint('Drag to reframe', true);
+    else if(dragMode !== 'reframe') document.body.classList.remove('reframe-active');
+  }
+  function isReframeGesture(e){
+    return !!(reframeModifier || e.shiftKey || e.button === 1 || e.button === 2 || (e.buttons & 4) || (e.buttons & 2));
+  }
   if(window.InteractiveDiplomaCapture){
     window.InteractiveDiplomaCapture.install({
       button: ui.captureBtn,
@@ -1701,8 +1647,12 @@
       return;
     }
     if(dragMode === 'cover') setCursorHint('Open cover', true);
+    else if(dragMode === 'reframe') setCursorHint('Reframing', true);
     else if(dragMode === 'orbit') setCursorHint('Orbit', true);
-    else if(e.target === canvas) setCursorHint(pickIsCover(e.clientX, e.clientY) ? 'Drag cover' : 'Drag to orbit', false, true);
+    else if(e.target === canvas){
+      if(reframeModifier || e.shiftKey) setCursorHint('Drag to reframe', true);
+      else setCursorHint(pickIsCover(e.clientX, e.clientY) ? 'Drag cover' : 'Drag orbit · Space reframe', false, true);
+    }
     else setCursorHint('', false);
   }
   document.addEventListener('pointermove', (e)=>{ wakeChrome(); updateSmartCursor(e); }, {passive:true});
@@ -1716,36 +1666,51 @@
   function onDown(e){
     setAutoSpin(false);
     const x = e.clientX, y = e.clientY;
-    dragMode = pickIsCover(x,y) ? 'cover' : 'orbit';
+    const wantsReframe = isReframeGesture(e);
+    dragMode = wantsReframe ? 'reframe' : (pickIsCover(x,y) ? 'cover' : 'orbit');
+    if(dragMode === 'reframe'){
+      canvasReframeDrag = {x, y, startX:camTarget.x, startY:camTarget.y};
+      document.body.classList.add('reframe-active');
+      setCursorHint('Reframing', true);
+    }
     last.x = x; last.y = y;
     canvas.classList.add('grabbing');
     wakeChrome(1200);
-    setCursorHint(dragMode === 'cover' ? 'Open cover' : 'Orbit', true);
+    if(dragMode !== 'reframe') setCursorHint(dragMode === 'cover' ? 'Open cover' : 'Orbit', true);
     canvas.setPointerCapture && e.pointerId!==undefined && canvas.setPointerCapture(e.pointerId);
   }
   function onMove(e){
     if(!dragMode) return;
     const x = e.clientX, y = e.clientY;
     const dx = x-last.x, dy = y-last.y;
-    last.x=x; last.y=y;
     if(dragMode==='cover'){
       openTarget += (-dy) * 0.0036;
       openTarget = Math.min(1, Math.max(0, openTarget));
       syncOpenUI(openTarget);
       setCursorHint(Math.round(openTarget*100) + '% open', true);
+    } else if(dragMode === 'reframe' && canvasReframeDrag){
+      const totalDx = x - canvasReframeDrag.x;
+      const totalDy = y - canvasReframeDrag.y;
+      applyNaturalReframe(canvasReframeDrag.startX, canvasReframeDrag.startY, totalDx, totalDy);
+      setCursorHint('Reframing', true);
     } else {
       rotTarget.y += dx*0.006;
       rotTarget.x += dy*0.006;
       rotVel.x = dy*0.006; rotVel.y = dx*0.006;
     }
+    last.x=x; last.y=y;
   }
   function onUp(e){
     const endedCoverDrag = dragMode === 'cover';
+    const endedReframeDrag = dragMode === 'reframe';
     dragMode = null;
+    canvasReframeDrag = null;
     canvas.classList.remove('grabbing');
-    setCursorHint(endedCoverDrag ? Math.round(openTarget*100) + '% open' : 'Set', false, true);
+    document.body.classList.remove('reframe-active');
+    if(reframeModifier) document.body.classList.add('reframe-ready');
+    setCursorHint(endedCoverDrag ? Math.round(openTarget*100) + '% open' : (endedReframeDrag ? 'Framed' : 'Set'), false, true);
     if(endedCoverDrag){
-      // Dragging the physical cover should behave like the slider: hinge only, no camera/view changes.
+      // Dragging the physical cover should behave like the old slider: hinge only, no camera/view changes.
       syncOpenUI(openTarget);
     }
   }
@@ -1792,7 +1757,15 @@
   canvas.addEventListener('touchstart', (e)=>{
     if(e.touches.length===2){
       const [a,b] = e.touches;
-      pinchStart = {dist: Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY), camDist};
+      const midX = (a.clientX + b.clientX) / 2;
+      const midY = (a.clientY + b.clientY) / 2;
+      pinchStart = {
+        dist: Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY),
+        midX, midY,
+        camDist,
+        targetX: camTarget.x,
+        targetY: camTarget.y
+      };
       dragMode = null;
     }
   }, {passive:true});
@@ -1801,11 +1774,95 @@
       e.preventDefault();
       const [a,b] = e.touches;
       const d = Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY);
+      const midX = (a.clientX + b.clientX) / 2;
+      const midY = (a.clientY + b.clientY) / 2;
       const scale = pinchStart.dist / Math.max(1,d);
       camDist = clampZoom(pinchStart.camDist * scale);
+      // Two-finger drag reframes while pinch zooms. Single-finger drag is kept for orbit/cover,
+      // so pan and orbit never compete on touch screens. Reframing follows the
+      // movement of the fingers on screen for a direct-manipulation feel.
+      applyNaturalReframe(pinchStart.targetX, pinchStart.targetY, midX - pinchStart.midX, midY - pinchStart.midY, 0.88);
     }
   }, {passive:false});
   canvas.addEventListener('touchend', (e)=>{ if(e.touches.length<2) pinchStart=null; }, {passive:true});
+
+
+  function handleKeyboardControls(e){
+    if(editableActive() || e.metaKey || e.ctrlKey || e.altKey) return;
+    if(e.code === 'Space'){
+      e.preventDefault();
+      if(!reframeModifier) setReframeReady(true);
+      return;
+    }
+    const k = e.key;
+    const lower = typeof k === 'string' ? k.toLowerCase() : '';
+    if(k === '+' || k === '='){
+      e.preventDefault();
+      setAutoSpin(false);
+      camDist = clampZoom(camDist - 0.42);
+      setCursorHint('Closer', true);
+      wakeChrome(1600);
+      return;
+    }
+    if(k === '-' || k === '_'){
+      e.preventDefault();
+      setAutoSpin(false);
+      camDist = clampZoom(camDist + 0.42);
+      setCursorHint('Wider', true);
+      wakeChrome(1600);
+      return;
+    }
+    if(lower === 'o'){
+      e.preventDefault();
+      toggleCoverSpring();
+      return;
+    }
+    if(lower === 'r'){
+      e.preventDefault();
+      resetPresentation();
+      setCursorHint('Reset', true);
+      wakeChrome(1600);
+      return;
+    }
+    if(k === '0'){
+      e.preventDefault();
+      centerCameraTarget();
+      setCursorHint('Centered', true);
+      wakeChrome(1600);
+      return;
+    }
+    if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(k)){
+      e.preventDefault();
+      setAutoSpin(false);
+      if(e.shiftKey || reframeModifier){
+        const step = e.shiftKey ? 0.10 : 0.055;
+        // Arrow reframing also follows screen direction: Right moves the diploma
+        // right, Up moves it up. Because camTarget is a look-at point, that means
+        // changing the target in the opposite direction internally.
+        if(k === 'ArrowLeft') setCameraTarget(camTarget.x + step, camTarget.y, true);
+        if(k === 'ArrowRight') setCameraTarget(camTarget.x - step, camTarget.y, true);
+        if(k === 'ArrowUp') setCameraTarget(camTarget.x, camTarget.y - step, true);
+        if(k === 'ArrowDown') setCameraTarget(camTarget.x, camTarget.y + step, true);
+        setCursorHint('Reframed', true);
+      }else{
+        const rotStep = e.shiftKey ? 0.035 : 0.055;
+        if(k === 'ArrowLeft') rotTarget.y -= rotStep;
+        if(k === 'ArrowRight') rotTarget.y += rotStep;
+        if(k === 'ArrowUp') rotTarget.x -= rotStep;
+        if(k === 'ArrowDown') rotTarget.x += rotStep;
+        setCursorHint('Orbit', true);
+      }
+      wakeChrome(1600);
+    }
+  }
+  window.addEventListener('keydown', handleKeyboardControls);
+  window.addEventListener('keyup', (e)=>{
+    if(e.code === 'Space'){
+      setReframeReady(false);
+      setCursorHint('', false);
+    }
+  });
+  window.addEventListener('blur', ()=>setReframeReady(false));
 
   function onResize(){
     const stage = document.getElementById('stage');

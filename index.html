@@ -33,21 +33,7 @@
 <button aria-label="Fullscreen" class="chromeButton" data-tip="Fullscreen" id="btnFullscreen" type="button"><span class="ico">⛶</span><span class="miniLabel">Full</span></button>
 </div>
 <button aria-label="Reset view" class="chromeButton escapeReset" data-tip="Reset view" id="btnReset" type="button"><span class="ico">↻</span><span class="miniLabel">Reset</span></button>
-<div aria-label="Diploma view controls" id="ui">
-<div class="rangeCard">
-<label class="rangeMeta" for="openRange">
-<span aria-hidden="true">Cover</span>
-<span class="srOnly">Cover open amount</span>
-<span id="openValue">100%</span>
-</label>
-<input aria-label="Cover open amount" data-tip="Slide cover" id="openRange" max="100" min="0" type="range" value="100"/>
-</div>
-<div aria-label="Camera controls" class="iconCluster">
-<button aria-label="Zoom in" data-tip="Closer" id="btnZoomIn" type="button"><span class="ico">＋</span><span class="miniLabel">Closer</span></button>
-<button aria-label="Zoom out" data-tip="Wider" id="btnZoomOut" type="button"><span class="ico">−</span><span class="miniLabel">Wider</span></button>
-<button aria-label="Move camera target" class="targetPad" data-tip="Reframe" id="targetPad" title="Drag to reframe. Double-click to center." type="button"><span aria-hidden="true" class="targetDot" id="targetDot"></span><span class="miniLabel">Frame</span></button>
-</div>
-</div>
+
 <button aria-controls="debugPanel" aria-expanded="false" aria-label="Open tuning panel" class="debugToggle" id="debugToggle" type="button">
 <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewbox="0 0 24 24">
 <path d="M4 7h10"></path><path d="M18 7h2"></path><circle cx="16" cy="7" r="2"></circle>
@@ -142,7 +128,6 @@
 <p class="debugHint">The production default is built into the file. “Save local” only affects this browser for tuning; “Reset defaults” returns to the built-in values.</p>
 </aside>
 </div>
-
 <div aria-hidden="true" class="introScene" id="introScene">
 <div class="introCopy">
 <span class="introKicker">Interactive Diploma</span>
@@ -151,10 +136,8 @@
 </div>
 <div id="veil"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
 <script src="src/intro.js"></script>
 <script src="src/screenshot-export.js"></script>
 <script src="src/app.js"></script>
-
 </body>
 </html>

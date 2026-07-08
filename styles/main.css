@@ -117,150 +117,41 @@
     opacity:.76;
   }
 
-  /* Interaction layout: frequent diploma controls stay low and centered;
-     export/fullscreen live top-right, reset is a bottom-right escape hatch,
-     and the tuning affordance stays isolated in the top-left. */
-  #ui{
-    position:absolute;
-    left:50%;
-    bottom:max(18px,env(safe-area-inset-bottom));
-    transform:translateX(-50%) translateY(10px) scale(.982);
-    width:min(410px,calc(100vw - 28px));
-    max-width:calc(100vw - 28px);
-    display:grid;
-    grid-template-columns:minmax(118px,1fr) auto;
-    gap:8px;
-    align-items:center;
-    padding:7px;
-    border:1px solid rgba(216,181,109,0.12);
-    border-radius:999px;
-    background:linear-gradient(180deg,rgba(8,16,30,0.48),rgba(4,10,19,0.34));
-    box-shadow:0 18px 52px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.055);
-    backdrop-filter:blur(18px) saturate(1.08);
-    -webkit-backdrop-filter:blur(18px) saturate(1.08);
-    pointer-events:auto;
-    user-select:none;
-    -webkit-user-select:none;
-    opacity:.18;
-    transition:opacity .28s ease, transform .28s ease, background .28s ease, border-color .28s ease, box-shadow .28s ease;
-  }
-  #appChrome.chrome-awake #ui,
-  #ui:hover,
-  #ui:focus-within{
-    opacity:.94;
-    transform:translateX(-50%) translateY(0) scale(1);
-    border-color:rgba(216,181,109,0.22);
-    background:linear-gradient(180deg,rgba(8,16,30,0.74),rgba(4,10,19,0.56));
-    box-shadow:0 22px 64px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.07);
-  }
-  #ui button,
+  /* Zero-UI chrome: only low-frequency system actions stay visible.
+     The diploma itself owns the canvas: drag the cover, orbit anywhere else,
+     hold Space/Shift to reframe, wheel/pinch to zoom. */
   .chromeButton{
     appearance:none;
     -webkit-appearance:none;
-    min-height:42px;
-    border:1px solid rgba(255,255,255,0.075);
+    width:44px;
+    min-width:44px;
+    height:44px;
+    min-height:44px;
+    display:grid;
+    place-items:center;
+    padding:0;
+    border:1px solid rgba(216,181,109,0.14);
     border-radius:999px;
-    background:rgba(255,255,255,0.026);
+    background:rgba(5,12,23,0.38);
     color:var(--text);
+    box-shadow:0 16px 44px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.055);
+    backdrop-filter:blur(18px) saturate(1.08);
+    -webkit-backdrop-filter:blur(18px) saturate(1.08);
     font:800 11px/1.15 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     cursor:pointer;
+    pointer-events:auto;
     touch-action:manipulation;
     transition:background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease, opacity .18s ease;
   }
-  #ui button:hover,
   .chromeButton:hover{
     background:rgba(216,181,109,0.12);
     border-color:rgba(216,181,109,0.28);
   }
-  #ui button:active,
   .chromeButton:active{ transform:translateY(1px) scale(.985); }
-  #ui button:focus-visible,
   .chromeButton:focus-visible{
     outline:2px solid var(--gold-soft);
     outline-offset:3px;
   }
-  .rangeCard{
-    min-width:0;
-    min-height:42px;
-    padding:8px 12px 7px;
-    border:1px solid rgba(255,255,255,0.06);
-    border-radius:999px;
-    background:rgba(255,255,255,0.018);
-    overflow:hidden;
-  }
-  .rangeMeta{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:2px;
-    color:rgba(248,239,226,0.54);
-    font:850 10px/1.1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    letter-spacing:.10em;
-    text-transform:uppercase;
-    white-space:nowrap;
-  }
-  #openValue{
-    color:var(--gold-soft);
-    letter-spacing:.02em;
-    font-size:11px;
-  }
-  #openRange{
-    width:100%;
-    min-width:0;
-    height:18px;
-    margin:0;
-    cursor:pointer;
-    accent-color:var(--gold-soft);
-  }
-  .iconCluster{
-    display:flex;
-    gap:6px;
-    align-items:center;
-    justify-content:flex-end;
-    min-width:0;
-  }
-  .iconCluster button{
-    width:42px;
-    min-width:42px;
-    padding:0;
-  }
-  .targetPad{
-    position:relative;
-    overflow:hidden;
-    display:grid;
-    place-items:center;
-  }
-  .targetPad::before,
-  .targetPad::after{
-    content:"";
-    position:absolute;
-    left:50%; top:50%;
-    transform:translate(-50%,-50%);
-    background:rgba(241,210,138,0.18);
-    pointer-events:none;
-  }
-  .targetPad::before{ width:1px; height:18px; }
-  .targetPad::after{ width:18px; height:1px; }
-  .targetDot{
-    position:relative;
-    z-index:1;
-    width:6px;
-    height:6px;
-    border-radius:999px;
-    background:var(--gold-soft);
-    box-shadow:0 0 0 4px rgba(241,210,138,0.075), 0 0 16px rgba(241,210,138,0.24);
-    opacity:.82;
-    transform:translate3d(0,0,0);
-    transition:transform .16s ease, opacity .16s ease, box-shadow .16s ease;
-  }
-  .targetPad:hover .targetDot,
-  .targetPad:focus-visible .targetDot,
-  .targetPad.is-dragging .targetDot{
-    opacity:1;
-    box-shadow:0 0 0 5px rgba(241,210,138,0.10), 0 0 20px rgba(241,210,138,0.34);
-  }
-  .targetPad.is-dragging .targetDot{ transition:none; }
   .ico{
     display:block;
     color:var(--gold-soft);
@@ -269,10 +160,16 @@
     margin-bottom:0;
   }
   .miniLabel{
-    position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
-    overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+    position:absolute !important;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;
+    border:0;
   }
-
   .systemTray{
     position:absolute;
     top:max(14px,env(safe-area-inset-top));
@@ -289,121 +186,53 @@
   #appChrome.chrome-awake .systemTray,
   .systemTray:hover,
   .systemTray:focus-within{ opacity:.94; }
-  .systemTray .chromeButton,
-  .escapeReset{
-    width:44px;
-    min-width:44px;
-    height:44px;
-    min-height:44px;
-    display:grid;
-    place-items:center;
-    padding:0;
-    background:rgba(5,12,23,0.38);
-    border-color:rgba(216,181,109,0.14);
-    box-shadow:0 16px 44px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.055);
-    backdrop-filter:blur(18px) saturate(1.08);
-    -webkit-backdrop-filter:blur(18px) saturate(1.08);
-  }
   .escapeReset{
     position:absolute;
     right:max(14px,env(safe-area-inset-right));
     left:auto;
     bottom:max(20px,env(safe-area-inset-bottom));
     z-index:43;
-    pointer-events:auto;
     opacity:.30;
   }
   #appChrome.chrome-awake .escapeReset,
   .escapeReset:hover,
   .escapeReset:focus-visible{ opacity:.94; }
+  body.reframe-ready .cursorHint.show{
+    opacity:.96;
+    color:var(--gold-soft);
+    border-color:rgba(216,181,109,0.40);
+    background:rgba(7,14,27,0.76);
+  }
+  body.reframe-active .cursorHint.show{
+    opacity:1;
+    color:var(--gold-soft);
+    border-color:rgba(241,210,138,0.48);
+    background:rgba(10,19,35,0.82);
+  }
 
   @media (pointer:coarse){
-    #ui{ opacity:.68; transform:translateX(-50%) translateY(0) scale(1); }
     .systemTray,.escapeReset{ opacity:.62; }
   }
-
   @media (max-width: 680px){
-    #ui{
-      width:calc(100vw - 18px);
-      grid-template-columns:minmax(96px,1fr) auto;
+    .systemTray{
+      top:max(10px,env(safe-area-inset-top));
+      right:max(10px,env(safe-area-inset-right));
       gap:6px;
-      padding:6px;
-      bottom:max(10px,env(safe-area-inset-bottom));
     }
-    .rangeCard{ min-height:40px; padding:7px 10px 6px; }
-    .rangeMeta{ font-size:9px; letter-spacing:.08em; }
-    #openRange{ height:18px; }
-    .iconCluster{ gap:5px; }
-    .iconCluster button{ width:38px; min-width:38px; min-height:40px; }
-    .systemTray{ top:max(10px,env(safe-area-inset-top)); right:max(10px,env(safe-area-inset-right)); left:auto; gap:6px; }
-    .systemTray .chromeButton,.escapeReset{ width:40px; min-width:40px; height:40px; min-height:40px; }
+    .chromeButton{ width:40px; min-width:40px; height:40px; min-height:40px; }
     .escapeReset{
       right:max(10px,env(safe-area-inset-right));
-      left:auto;
-      bottom:max(76px,calc(env(safe-area-inset-bottom) + 76px));
-      top:auto;
+      bottom:max(12px,env(safe-area-inset-bottom));
     }
   }
-  @media (max-width: 360px){
-    #ui{
-      width:calc(100vw - 12px);
-      grid-template-columns:minmax(78px,1fr) auto;
-      gap:5px;
-      padding:5px;
-    }
-    .rangeCard{ padding:6px 8px 5px; min-height:38px; }
-    .rangeMeta span[aria-hidden="true"]{ display:none; }
-    .rangeMeta{ justify-content:flex-end; }
-    .iconCluster button{ width:34px; min-width:34px; min-height:38px; }
-    .ico{ font-size:16px; }
-    .targetPad::before{ height:14px; }
-    .targetPad::after{ width:14px; }
-  }
-  @media (max-height: 520px) and (orientation: landscape){
-    #ui{
-      bottom:max(8px,env(safe-area-inset-bottom));
-      width:min(390px,calc(100vw - 150px));
-    }
-    .escapeReset{
-      bottom:max(10px,env(safe-area-inset-bottom));
-      top:auto;
-      right:max(10px,env(safe-area-inset-right));
-      left:auto;
-    }
-  }
-
   @media (max-width: 430px){
-    #ui{
-      width:calc(100vw - 12px);
-      grid-template-columns:minmax(72px,1fr) auto;
-      gap:5px;
-      padding:5px;
-    }
-    .rangeCard{ min-height:38px; padding:6px 8px 5px; }
-    .rangeMeta{ font-size:8.5px; letter-spacing:.07em; }
-    .iconCluster{ gap:4px; }
-    .iconCluster button{ width:34px; min-width:34px; min-height:38px; }
-    .systemTray .chromeButton,.escapeReset,.debugToggle{ width:38px; min-width:38px; height:38px; min-height:38px; }
-    .escapeReset{ bottom:max(70px,calc(env(safe-area-inset-bottom) + 70px)); }
-  }
-
-  @media (max-width: 310px){
-    #ui{ grid-template-columns:1fr auto; width:calc(100vw - 8px); }
-    .rangeCard{ padding-inline:7px; }
-    .iconCluster button{ width:31px; min-width:31px; min-height:36px; }
-    .ico{ font-size:15px; }
+    .chromeButton{ width:38px; min-width:38px; height:38px; min-height:38px; }
     .systemTray{ gap:5px; }
-    .systemTray .chromeButton,.escapeReset,.debugToggle{ width:36px; min-width:36px; height:36px; min-height:36px; }
   }
-
-  @media (max-width: 260px){
-    #ui{
-      grid-template-columns:1fr;
-      border-radius:22px;
-      max-width:calc(100vw - 8px);
-    }
-    .iconCluster{ justify-content:center; }
-    .escapeReset{ bottom:max(112px,calc(env(safe-area-inset-bottom) + 112px)); }
+  @media (max-width: 310px){
+    .chromeButton{ width:36px; min-width:36px; height:36px; min-height:36px; }
+    .systemTray{ gap:5px; }
+    .ico{ font-size:15px; }
   }
 
   /* Optional tuning tools: icon-only, unobtrusive, and hidden until needed. */
@@ -647,7 +476,6 @@ body.intro-active .introScene{
   30%{ opacity:1; }
   100%{ transform:scaleX(1); opacity:.74; }
 }
-body.intro-active #ui,
 body.intro-active .systemTray,
 body.intro-active .escapeReset,
 body.intro-active .debugToggle{

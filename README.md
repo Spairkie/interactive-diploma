@@ -11,7 +11,7 @@ I graduated from Liberty University with a Bachelor of Science in Computer Scien
 ## Features
 
 - Real-time 3D diploma viewer built on Three.js
-- Drag to rotate, drag the cover to open, pinch or scroll to zoom
+- Drag to rotate, drag the cover to open, scroll/pinch to zoom, and hold Space or Shift while dragging to reframe
 - Cinematic intro reveal on load
 - One-click high-resolution screenshot export
 - Procedurally generated textures for leather, moiré silk, paper, and gold foil
@@ -22,15 +22,25 @@ I graduated from Liberty University with a Bachelor of Science in Computer Scien
 
 ## Controls
 
+The public display is intentionally closer to zero UI now: the bottom cover/zoom/reframe dock has been removed so the diploma itself stays the main interface.
+
+
 | Action | Input |
 |---|---|
-| Rotate | Drag the diploma |
-| Open / close cover | Drag the cover, double-click / double-tap it, or use the Cover slider |
-| Zoom | Scroll, pinch, or the Closer / Wider buttons |
-| Reframe | Drag the target dot |
-| Reset view | Reset button (bottom-right) |
+| Rotate | Drag anywhere on the canvas outside the cover |
+| Open / close cover | Drag the cover directly, or double-click / double-tap the cover |
+| Zoom | Scroll wheel, trackpad scroll, pinch gesture, or `+` / `-` keys |
+| Reframe / pan | Hold `Space` or `Shift` and drag the canvas; on touch, use a two-finger drag. The diploma follows your drag direction naturally. |
+| Center framing | `0` key |
+| Keyboard orbit | Arrow keys |
+| Reset view | Reset button (bottom-right), or `R` key |
 | Export image | Export button (top-right) |
 | Fullscreen | Fullscreen button (top-right) |
+
+## File layout
+
+- `index.html` loads the split CSS and JavaScript files.
+- `404.html` is a fully self-contained copy of the same experience with CSS and local JavaScript inlined. This keeps the GitHub Pages fallback page functional even if someone lands on an unknown route.
 
 ## Run locally
 
